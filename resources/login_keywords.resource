@@ -1,43 +1,47 @@
 *** Settings ***
 Library    SeleniumLibrary
+Variables    ../variables/variable.py
 
 *** Keywords ***
 I navegate to the login page
-    [Arguments]    ${URL}
-    Go To    ${URL}
+    Go To    ${URL_DATA["baseUrl"]}
 
 I input correct credentials
-    [Arguments]    ${USERNAME}    ${PASSWORD}
     Wait Until Element Is Visible    id=user-name
-    Input Text    id=user-name    ${USERNAME}
-    Input Text    id=password    ${PASSWORD} 
+    Input Text    id=user-name    ${LOGIN_DATA["correctData"]["username"]}
+    Input Text    id=password    ${LOGIN_DATA["correctData"]["password"]} 
 
 I input wrong credentials
-    [Arguments]    ${WRONG_USERNAME}    ${WRONG_PASSWORD}
     Wait Until Element Is Visible    id=user-name
-    Input Text    id=user-name    ${WRONG_USERNAME}
-    Input Text    id=password    ${WRONG_PASSWORD}
+    Input Text    id=user-name    ${LOGIN_DATA["wrongData"]["username"]}
+    Input Text    id=password    ${LOGIN_DATA["wrongData"]["password"]}
 
 I click no the login button
     Click Button    id=login-button 
 
 I able view the home page
     ${Location}    Get Location
-    Should Be Equal    ${Location}    https://www.saucedemo.com/inventory.html
+    ${full_url}    Catenate    SEPARATOR=    ${URL_DATA["baseUrl"]}    ${URL_DATA["inventoryUrl"]}
+    Should Be Equal    ${Location}    ${full_url}
 
-I am able to see expected error message
-    [Arguments]    ${ERROR_MESSAGE}
-    Wait Until Element Contains    class=error-message-container    ${ERROR_MESSAGE}
+I am able to see expected error message for no credentials
+    Wait Until Element Contains    class=error-message-container    ${ERROR_MESSAGE["noCredentials"]}
 
+I am able to see expected error message for no username
+    Wait Until Element Contains    class=error-message-container    ${ERROR_MESSAGE["noUsername"]}
+
+I am able to see expected error message for no password
+    Wait Until Element Contains    class=error-message-container    ${ERROR_MESSAGE["noPassword"]}
+
+I am able to see expected error message for wrong credentials
+    Wait Until Element Contains    class=error-message-container    ${ERROR_MESSAGE["wrongCredentials"]}
 I input only the username
-    [Arguments]    ${USERNAME}
     Wait Until Element Is Visible    id=user-name
-    Input Text    id=user-name    ${USERNAME}
+    Input Text    id=user-name    ${LOGIN_DATA["correctData"]["username"]}
 
 I input only the password
-    [Arguments]    ${PASSWORD}
     Wait Until Element Is Visible    id=user-name
-    Input Text    id=password    ${PASSWORD}
+    Input Text    id=password    ${LOGIN_DATA["correctData"]["password"]}
 
 I input no credentials
     Wait Until Element Is Visible    id=user-name
